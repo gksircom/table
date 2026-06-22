@@ -1,0 +1,2278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Hero: Tables, Squares & Roots Mastery</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #818cf8;
+            --secondary: #ec4899;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --background: #f0f4f9;
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            --font-display: 'Fredoka', cursive;
+            --font-sans: 'Outfit', sans-serif;
+        }
+
+        [data-theme="dark"] {
+            --primary: #6366f1;
+            --primary-light: #a5b4fc;
+            --secondary: #f472b6;
+            --accent: #fbbf24;
+            --success: #34d399;
+            --danger: #f87171;
+            --background: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.8);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: radial-gradient(circle at 10% 20%, var(--background) 0%, var(--background) 90%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            transition: background 0.3s ease;
+        }
+
+        /* Utility animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(2deg); }
+        }
+
+        @keyframes pulse-border {
+            0%, 100% { border-color: var(--primary); box-shadow: 0 0 0 0px rgba(79, 70, 229, 0.4); }
+            50% { border-color: var(--secondary); box-shadow: 0 0 20px 4px rgba(236, 72, 153, 0.4); }
+        }
+
+        @keyframes wrong-blink {
+            0%, 100% { background-color: transparent; }
+            25%, 75% { background-color: rgba(239, 68, 68, 0.4); }
+            50% { background-color: rgba(239, 68, 68, 0.8); }
+        }
+
+        @keyframes win-pop {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes correct-blink {
+            0%, 100% { background-color: transparent; }
+            25%, 75% { background-color: rgba(16, 185, 129, 0.25); }
+            50% { background-color: rgba(16, 185, 129, 0.5); }
+        }
+
+        .screen-flash-green {
+            animation: correct-blink 0.5s ease-out;
+        }
+
+        .question-card.correct-glow {
+            border-color: var(--success) !important;
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.6) !important;
+        }
+
+        @keyframes progress-grow {
+            from { width: 0%; }
+        }
+
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        /* Glassmorphism containers */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            padding: 30px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            box-shadow: var(--shadow-lg);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            font-family: var(--font-display);
+            font-size: 2.2rem;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* Styled Buttons */
+        .btn {
+            font-family: var(--font-display);
+            padding: 12px 24px;
+            border-radius: var(--radius-md);
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #fff;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        }
+
+        .btn-primary:hover {
+            filter: brightness(1.1);
+            box-shadow: 0 8px 15px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, var(--secondary) 0%, #f472b6 100%);
+        }
+
+        .btn-secondary:hover {
+            filter: brightness(1.1);
+            box-shadow: 0 8px 15px rgba(236, 72, 153, 0.3);
+        }
+
+        .btn-accent {
+            background: linear-gradient(135deg, var(--accent) 0%, #fbbf24 100%);
+        }
+
+        .btn-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            padding: 0;
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-main);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-icon:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Screen views */
+        .screen {
+            display: none;
+            flex-direction: column;
+            flex-grow: 1;
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            animation: win-pop 0.3s ease-out;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* User selection screen styling */
+        #user-screen {
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+        }
+
+        .user-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 24px;
+            width: 100%;
+            max-width: 800px;
+            margin: 40px 0;
+        }
+
+        .user-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 24px;
+            cursor: pointer;
+            background: var(--card-bg);
+            border: 3px solid transparent;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s ease;
+        }
+
+        .user-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-light);
+        }
+
+        .avatar-img {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: #e2e8f0;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            box-shadow: inset 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .username {
+            font-weight: 700;
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        .add-user-card {
+            border: 3px dashed var(--text-muted);
+            background: transparent;
+            justify-content: center;
+        }
+
+        .add-user-card:hover {
+            border-color: var(--primary);
+            background: rgba(79, 70, 229, 0.05);
+        }
+
+        /* Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--background);
+            border-radius: var(--radius-lg);
+            width: 90%;
+            max-width: 500px;
+            padding: 30px;
+            box-shadow: var(--shadow-lg);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            animation: win-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            color: var(--primary);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            border: 2px solid var(--text-muted);
+            background: var(--card-bg);
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: var(--primary);
+        }
+
+        .avatar-selection {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .avatar-option {
+            font-size: 2.2rem;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: var(--radius-md);
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .avatar-option.selected {
+            border-color: var(--primary);
+            background: rgba(79, 70, 229, 0.1);
+        }
+
+        /* Dashboard layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .dashboard-card {
+            text-align: center;
+            padding: 40px 30px;
+            cursor: pointer;
+            border-radius: var(--radius-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .dashboard-card-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+
+        .dashboard-card:hover .dashboard-card-icon {
+            transform: scale(1.2) rotate(5deg);
+        }
+
+        .dashboard-card h3 {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            margin-bottom: 12px;
+        }
+
+        .dashboard-card p {
+            color: var(--text-muted);
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        /* Levels Screen styling */
+        .level-header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .level-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 16px;
+        }
+
+        .level-button {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-md);
+            background: var(--card-bg);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            font-family: var(--font-display);
+        }
+
+        .level-button.locked {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background: #e2e8f0;
+            color: #94a3b8;
+        }
+
+        [data-theme="dark"] .level-button.locked {
+            background: #1e293b;
+            color: #475569;
+        }
+
+        .level-button.boss {
+            border: 3px solid var(--danger);
+            background: rgba(239, 68, 68, 0.05);
+            animation: pulse-border 2s infinite;
+        }
+
+        .level-button.boss::after {
+            content: '👹 BOSS';
+            position: absolute;
+            bottom: 4px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--danger);
+            letter-spacing: 0.5px;
+        }
+
+        .level-button:not(.locked):hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary);
+        }
+
+        .level-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .level-status-icon {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            font-size: 1rem;
+        }
+
+        /* Play Screen Arena */
+        .play-container {
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            align-items: center;
+        }
+
+        .timer-container {
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+
+        .timer-svg {
+            transform: rotate(-90deg);
+            width: 80px;
+            height: 80px;
+        }
+
+        .timer-circle-bg {
+            fill: none;
+            stroke: rgba(0,0,0,0.1);
+            stroke-width: 8;
+        }
+
+        .timer-circle-fg {
+            fill: none;
+            stroke: var(--primary);
+            stroke-width: 8;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.1s linear;
+        }
+
+        .timer-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+
+        .question-card {
+            width: 100%;
+            text-align: center;
+            padding: 50px 20px;
+            border-radius: var(--radius-lg);
+            font-family: var(--font-display);
+            font-size: 4rem;
+            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(255,255,255,0.95) 100%);
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .boss-card {
+            border: 3px solid var(--danger);
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, var(--card-bg) 100%);
+        }
+
+        .boss-warning-badge {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--danger);
+            color: white;
+            font-size: 0.9rem;
+            padding: 4px 16px;
+            border-radius: 50px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            animation: float 2s infinite;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            width: 100%;
+        }
+
+        @media (max-width: 600px) {
+            .options-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .question-card {
+                font-size: 3rem;
+            }
+        }
+
+        .option-button {
+            padding: 24px;
+            font-size: 1.8rem;
+            font-family: var(--font-display);
+            border-radius: var(--radius-md);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            background: var(--card-bg);
+            color: var(--text-main);
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+        }
+
+        .option-button:hover:not(:disabled) {
+            transform: scale(1.05);
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: var(--shadow-md);
+        }
+
+        .option-button.correct {
+            background-color: var(--success) !important;
+            color: white !important;
+            border-color: var(--success) !important;
+            transform: scale(1.05);
+        }
+
+        .option-button.wrong {
+            background-color: var(--danger) !important;
+            color: white !important;
+            border-color: var(--danger) !important;
+            transform: scale(0.95);
+        }
+
+        /* Screen blinking for error feedback */
+        .screen-flash-red {
+            animation: wrong-blink 0.6s ease-out;
+        }
+
+        /* Score progression bar */
+        .score-progress-container {
+            width: 100%;
+            height: 14px;
+            background: rgba(0,0,0,0.08);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .score-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        /* Analytics Tab dashboard */
+        .analytics-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            overflow-x: auto;
+            padding-bottom: 6px;
+        }
+
+        .analytics-grid-container {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            background: var(--card-bg);
+            padding: 20px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .tables-matrix-grid {
+            display: grid;
+            grid-template-columns: repeat(11, minmax(70px, 1fr));
+            gap: 6px;
+            min-width: 800px;
+        }
+
+        .matrix-cell {
+            padding: 10px;
+            text-align: center;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            background: rgba(0,0,0,0.02);
+            border: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .matrix-cell.header-cell {
+            background: var(--primary);
+            color: white;
+            font-family: var(--font-display);
+            font-size: 1rem;
+        }
+
+        /* Color scale for response times */
+        .cell-mastered {
+            background-color: #10b981 !important; /* Fast, <= 1s */
+            color: white;
+        }
+        .cell-fast {
+            background-color: #6ee7b7 !important; /* < 2.5s */
+            color: #064e3b;
+        }
+        .cell-medium {
+            background-color: #fde047 !important; /* < 5s */
+            color: #713f12;
+        }
+        .cell-slow {
+            background-color: #fed7aa !important; /* < 8s */
+            color: #7c2d12;
+        }
+        .cell-bad {
+            background-color: #fca5a5 !important; /* >= 8s or incorrect */
+            color: #7f1d1d;
+        }
+        .cell-unattempted {
+            background-color: rgba(0,0,0,0.03);
+            color: var(--text-muted);
+        }
+
+        .tick-mark {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            font-size: 0.65rem;
+        }
+
+        .session-summary-box {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .summary-stat-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: var(--radius-md);
+            text-align: center;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .summary-stat-card h4 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .summary-stat-card .value {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        /* Results Screen Overlay style inside screen */
+        .results-box {
+            text-align: center;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .star-rating {
+            font-size: 3.5rem;
+            color: var(--accent);
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        /* General flex helpers */
+        .flex-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        /* Tooltip style */
+        .matrix-cell:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            z-index: 100;
+            box-shadow: var(--shadow-md);
+            pointer-events: none;
+            opacity: 0.9;
+        }
+
+        /* Standard grid views for squares, cubes */
+        .grid-100 {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
+            gap: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <span>⚡</span> Math Hero
+        </div>
+        <div class="header-actions">
+            <span id="current-user-display" style="font-family: var(--font-display); font-size: 1.1rem; font-weight: 600;"></span>
+            <button class="btn btn-icon" id="theme-toggle" title="Toggle Theme">🌓</button>
+            <button class="btn btn-primary" id="change-profile-btn" style="display: none;">Switch Profile</button>
+        </div>
+    </header>
+
+    <!-- USER SCREEN -->
+    <div id="user-screen" class="screen active">
+        <h1 style="font-family: var(--font-display); text-align: center; font-size: 2.8rem; margin-bottom: 10px;">Who is playing today?</h1>
+        <p style="color: var(--text-muted); font-size: 1.1rem; margin-bottom: 20px; text-align: center;">Select your profile or create a new one!</p>
+        
+        <div class="user-grid" id="profiles-container">
+            <!-- Dynamically populated -->
+            <div class="user-card add-user-card" id="btn-open-create-user">
+                <div class="avatar-img">➕</div>
+                <div class="username">Add Hero</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN DASHBOARD -->
+    <div id="dashboard-screen" class="screen">
+        <h1 style="font-family: var(--font-display); font-size: 2.5rem; margin-bottom: 8px;">Dashboard</h1>
+        <p style="color: var(--text-muted); margin-bottom: 30px;">Choose a practice area to start your training adventure!</p>
+
+        <div class="dashboard-grid">
+            <div class="glass-card dashboard-card" onclick="selectMode('tables')">
+                <div class="dashboard-card-icon">✖️</div>
+                <h3>Math Tables</h3>
+                <p>Learn tables from 1 to 50. Master the speed grid!</p>
+            </div>
+            <div class="glass-card dashboard-card" onclick="selectMode('squares')">
+                <div class="dashboard-card-icon">2️⃣</div>
+                <h3>Squares</h3>
+                <p>Master squares of numbers from 1 to 100!</p>
+            </div>
+            <div class="glass-card dashboard-card" onclick="selectMode('roots')">
+                <div class="dashboard-card-icon">📐</div>
+                <h3>Square Roots</h3>
+                <p>Learn precise roots and perfect roots up to 10,000!</p>
+            </div>
+            <div class="glass-card dashboard-card" onclick="selectMode('cubes')">
+                <div class="dashboard-card-icon">🧊</div>
+                <h3>Cubes</h3>
+                <p>Master cubes of numbers from 1 to 30!</p>
+            </div>
+        </div>
+
+        <div style="margin-top: 40px; display: flex; gap: 20px;">
+            <button class="btn btn-secondary" onclick="showScreen('analytics-screen'); renderAnalytics();">📊 My Performance Grid</button>
+        </div>
+    </div>
+
+    <!-- LEVELS SELECTOR SCREEN -->
+    <div id="levels-screen" class="screen">
+        <div class="level-header-bar">
+            <div>
+                <button class="btn btn-icon" onclick="showScreen('dashboard-screen')" style="margin-right: 15px;">⬅️</button>
+                <h1 id="mode-title" style="display: inline-block; font-family: var(--font-display); vertical-align: middle;">Math Practice</h1>
+            </div>
+        </div>
+        <div class="level-grid" id="levels-grid-container">
+            <!-- Dynamically populated levels -->
+        </div>
+    </div>
+
+    <!-- PLAY SCREEN -->
+    <div id="play-screen" class="screen">
+        <div class="play-container">
+            <div class="game-header">
+                <button class="btn btn-icon" onclick="confirmQuit()" id="quit-game-btn">❌</button>
+                <div style="text-align: center;">
+                    <div style="font-weight: 700; font-size: 1.1rem; color: var(--text-muted);" id="play-title">Level Practice</div>
+                    <div class="score-progress-container" style="width: 200px;">
+                        <div class="score-progress-bar" id="level-progress-fill"></div>
+                    </div>
+                </div>
+                <div class="timer-container">
+                    <svg class="timer-svg">
+                        <circle class="timer-circle-bg" cx="40" cy="40" r="34"></circle>
+                        <circle class="timer-circle-fg" id="timer-fg" cx="40" cy="40" r="34"></circle>
+                    </svg>
+                    <div class="timer-text" id="timer-value">10</div>
+                </div>
+            </div>
+
+            <!-- Question Card -->
+            <div class="glass-card question-card" id="q-card">
+                <div class="boss-warning-badge" id="boss-badge" style="display: none;">👹 BOSS LEVEL - ANSWER IN &lt; 3 SECONDS!</div>
+                <div id="question-text">5 x 6 = ?</div>
+            </div>
+
+            <!-- 6 Options Grid -->
+            <div class="options-grid" id="options-container">
+                <!-- 6 buttons populated dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- RESULTS SCREEN -->
+    <div id="results-screen" class="screen">
+        <div class="glass-card results-box">
+            <h1 id="result-title" style="font-family: var(--font-display); font-size: 2.5rem; color: var(--primary);">Awesome Job!</h1>
+            <div class="star-rating" id="result-stars">⭐⭐⭐</div>
+            <p id="result-details" style="font-size: 1.2rem; margin-bottom: 30px;">You answered 10 out of 10 correctly!</p>
+            
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <button class="btn btn-primary" id="btn-next-level" onclick="playNextLevel()">Next Level ➡️</button>
+                <button class="btn btn-secondary" id="btn-retry-level" onclick="retryLevel()">Try Again 🔄</button>
+                <button class="btn btn-accent" onclick="showScreen('levels-screen')">Back to Levels 🗺️</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ANALYTICS SCREEN -->
+    <div id="analytics-screen" class="screen">
+        <div style="display: flex; align-items: center; margin-bottom: 24px;">
+            <button class="btn btn-icon" onclick="showScreen('dashboard-screen')" style="margin-right: 15px;">⬅️</button>
+            <h1 style="font-family: var(--font-display); font-size: 2.5rem; display: inline-block; vertical-align: middle;">My Performance Tracker</h1>
+        </div>
+
+        <!-- Session Summary Cards -->
+        <div class="session-summary-box">
+            <div class="summary-stat-card">
+                <h4>Total Practice Time</h4>
+                <div class="value" id="stat-total-time">0m</div>
+            </div>
+            <div class="summary-stat-card">
+                <h4>Mastered Items (🥇 &le; 1s)</h4>
+                <div class="value" id="stat-mastered-count">0</div>
+            </div>
+            <div class="summary-stat-card">
+                <h4>Overall Accuracy</h4>
+                <div class="value" id="stat-accuracy">0%</div>
+            </div>
+        </div>
+
+        <div class="analytics-tabs">
+            <button class="btn btn-primary" id="tab-btn-tables" onclick="switchAnalyticsTab('tables')">Tables (1-50)</button>
+            <button class="btn btn-secondary" id="tab-btn-squares" onclick="switchAnalyticsTab('squares')">Squares (1-100)</button>
+            <button class="btn btn-secondary" id="tab-btn-roots" onclick="switchAnalyticsTab('roots')">Square Roots</button>
+            <button class="btn btn-secondary" id="tab-btn-cubes" onclick="switchAnalyticsTab('cubes')">Cubes (1-30)</button>
+        </div>
+
+        <h3 id="analytics-matrix-title" style="margin-bottom: 12px; font-family: var(--font-display);">Speed Matrix</h3>
+        <p style="color: var(--text-muted); margin-bottom: 20px;">Hover over cells to see response times. Green cells are mastered (correct answer in &le; 1 second) and won't be repeated in practice levels!</p>
+
+        <!-- Speed Matrix Grid container -->
+        <div class="analytics-grid-container" id="matrix-container">
+            <!-- Dynamically generated grids -->
+        </div>
+    </div>
+
+    <!-- USER MODAL (CREATE PROFILE) -->
+    <div id="user-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Create New Profile</h3>
+                <button onclick="closeUserModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">❌</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="username-input">Hero Name</label>
+                <input type="text" id="username-input" class="form-input" placeholder="Enter student name...">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Choose Avatar</label>
+                <div class="avatar-selection" id="avatar-picker">
+                    <!-- Avatars -->
+                    <div class="avatar-option selected" onclick="selectAvatarOption(this, '🦊')">🦊</div>
+                    <div class="avatar-option" onclick="selectAvatarOption(this, '🦁')">🦁</div>
+                    <div class="avatar-option" onclick="selectAvatarOption(this, '🦖')">🦖</div>
+                    <div class="avatar-option" onclick="selectAvatarOption(this, '🦄')">🦄</div>
+                    <div class="avatar-option" onclick="selectAvatarOption(this, '🐼')">🐼</div>
+                    <div class="avatar-option" onclick="selectAvatarOption(this, '🐯')">🐯</div>
+                    <div class="avatar-option" onclick="selectAvatarOption(this, '🐸')">🐸</div>
+                    <div class="avatar-option" onclick="selectAvatarOption(this, '🐙')">🐙</div>
+                    <div class="avatar-option" onclick="selectAvatarOption(this, '🦉')">🦉</div>
+                    <div class="avatar-option" onclick="selectAvatarOption(this, '🐱')">🐱</div>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="createUserProfile()" style="width: 100%; margin-top: 10px;">Create Profile 🎉</button>
+        </div>
+    </div>
+
+    <footer style="text-align: center; padding: 20px; font-weight: 600; color: var(--text-muted); font-size: 0.95rem; margin-top: auto; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+        Developed by - Guptesh Acharya
+    </footer>
+
+    <!-- AUDIO / SPEECH SYNTHESIS ENGINE -->
+    <script>
+        const SoundEffects = {
+            ctx: null,
+            init() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            },
+            playCorrect() {
+                this.init();
+                if (!this.ctx) return;
+                const now = this.ctx.currentTime;
+                
+                const osc1 = this.ctx.createOscillator();
+                const osc2 = this.ctx.createOscillator();
+                const gainNode = this.ctx.createGain();
+                
+                osc1.type = 'sine';
+                osc1.frequency.setValueAtTime(523.25, now);
+                osc1.frequency.exponentialRampToValueAtTime(1046.50, now + 0.12);
+                
+                osc2.type = 'triangle';
+                osc2.frequency.setValueAtTime(659.25, now);
+                osc2.frequency.exponentialRampToValueAtTime(1318.51, now + 0.12);
+
+                gainNode.gain.setValueAtTime(0.12, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+                
+                osc1.connect(gainNode);
+                osc2.connect(gainNode);
+                gainNode.connect(this.ctx.destination);
+                
+                osc1.start(now);
+                osc2.start(now);
+                osc1.stop(now + 0.3);
+                osc2.stop(now + 0.3);
+            },
+            playHeartbeat() {
+                this.init();
+                if (!this.ctx) return;
+                const now = this.ctx.currentTime;
+                
+                const playThump = (delay) => {
+                    const t = now + delay;
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(90, t);
+                    osc.frequency.exponentialRampToValueAtTime(25, t + 0.1);
+                    
+                    gain.gain.setValueAtTime(0.35, t);
+                    gain.gain.linearRampToValueAtTime(0.01, t + 0.1);
+                    
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    
+                    osc.start(t);
+                    osc.stop(t + 0.12);
+                };
+                
+                playThump(0);
+                playThump(0.15);
+            }
+        };
+
+        // TTS Narration Utility
+        function speakCorrectAnswer(textToSpeak) {
+            if ('speechSynthesis' in window) {
+                // Cancel any ongoing speech
+                window.speechSynthesis.cancel();
+                
+                const utterance = new SpeechSynthesisUtterance(textToSpeak);
+                utterance.lang = 'en-US';
+                utterance.rate = 1.0;
+                utterance.pitch = 1.1; // Kid friendly slightly higher pitch
+                
+                // Select a natural sounding english voice if available
+                const voices = window.speechSynthesis.getVoices();
+                const engVoice = voices.find(voice => voice.lang.startsWith('en') && voice.name.includes('Google'));
+                if (engVoice) {
+                    utterance.voice = engVoice;
+                }
+                
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+        // Force loading voices in chrome
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = () => {};
+        }
+    </script>
+
+    <!-- DATABASE LAYER (INDEXEDDB) -->
+    <script>
+        let db;
+        const DB_NAME = "MathHeroDB";
+        const DB_VERSION = 1;
+
+        function initDatabase() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+                request.onerror = (e) => {
+                    console.error("DB Initialization failed", e);
+                    reject(e);
+                };
+
+                request.onsuccess = (e) => {
+                    db = e.target.result;
+                    resolve(db);
+                };
+
+                request.onupgradeneeded = (e) => {
+                    const localDb = e.target.result;
+                    
+                    // Create object stores
+                    if (!localDb.objectStoreNames.contains("users")) {
+                        localDb.createObjectStore("users", { keyPath: "id", autoIncrement: true });
+                    }
+                    if (!localDb.objectStoreNames.contains("progress")) {
+                        const progressStore = localDb.createObjectStore("progress", { keyPath: "id", autoIncrement: true });
+                        progressStore.createIndex("userId_mode", ["userId", "mode"], { unique: false });
+                    }
+                    if (!localDb.objectStoreNames.contains("analytics")) {
+                        const analyticsStore = localDb.createObjectStore("analytics", { keyPath: "id", autoIncrement: true });
+                        analyticsStore.createIndex("userId_mode_question", ["userId", "mode", "questionKey"], { unique: true });
+                        analyticsStore.createIndex("userId_mode", ["userId", "mode"], { unique: false });
+                        analyticsStore.createIndex("userId", "userId", { unique: false });
+                    }
+                    if (!localDb.objectStoreNames.contains("sessions")) {
+                        localDb.createObjectStore("sessions", { keyPath: "id", autoIncrement: true });
+                    }
+                };
+            });
+        }
+    </script>
+
+    <!-- APPLICATION CONTROLLER ENGINE -->
+    <script>
+        // State variables
+        let currentUser = null;
+        let selectedAvatar = '🦊';
+        let currentMode = 'tables'; // tables, squares, roots, cubes
+        let activeLevel = 1;
+        let isBossLevel = false;
+        let gameTimer = null;
+        let timeRemaining = 10;
+        let maxTimeLimit = 10;
+        let questionsList = [];
+        let currentQuestionIndex = 0;
+        let userAnswersCount = 0;
+        let correctAnswersCount = 0;
+        let questionStartTime = 0;
+        let levelQuestionsRecord = []; // logs details of each response in current level
+        let selectedAnalyticsTab = 'tables';
+        let sessionStartTime = 0;
+        let sessionTimerInterval = null;
+
+        // Color coding logic
+        function getColorClassForTime(timeMs, isCorrect) {
+            if (!isCorrect) return 'cell-bad';
+            if (timeMs <= 1000) return 'cell-mastered';
+            if (timeMs <= 2500) return 'cell-fast';
+            if (timeMs <= 5000) return 'cell-medium';
+            if (timeMs <= 8000) return 'cell-slow';
+            return 'cell-bad';
+        }
+
+        // Initialize App on DOM Loaded
+        window.addEventListener('DOMContentLoaded', async () => {
+            await initDatabase();
+            loadThemes();
+            loadUserProfiles();
+            
+            // Set event listeners
+            document.getElementById('btn-open-create-user').addEventListener('click', openUserModal);
+            document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+            document.getElementById('change-profile-btn').addEventListener('click', logoutUser);
+            
+            // Periodically log active session time
+            sessionStartTime = Date.now();
+            sessionTimerInterval = setInterval(updateActiveSessionTime, 5000);
+        });
+
+        // Theme management
+        function loadThemes() {
+            const savedTheme = localStorage.getItem('math-hero-theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('math-hero-theme', newTheme);
+        }
+
+        // Screen Routing
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(scr => scr.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            
+            // Conditional button visibility
+            if (screenId === 'user-screen') {
+                document.getElementById('change-profile-btn').style.display = 'none';
+                document.getElementById('current-user-display').innerText = '';
+            } else {
+                document.getElementById('change-profile-btn').style.display = 'inline-block';
+                if (currentUser) {
+                    document.getElementById('current-user-display').innerText = `${currentUser.avatar} ${currentUser.name}`;
+                }
+            }
+        }
+
+        // Profile Selection Handlers
+        async function loadUserProfiles() {
+            const profilesContainer = document.getElementById('profiles-container');
+            // Remove previous user cards but keep the add button
+            const cards = profilesContainer.querySelectorAll('.user-card:not(.add-user-card)');
+            cards.forEach(c => c.remove());
+
+            const tx = db.transaction("users", "readonly");
+            const store = tx.objectStore("users");
+            const users = await new Promise((resolve) => {
+                const req = store.getAll();
+                req.onsuccess = () => resolve(req.result);
+            });
+
+            users.forEach(user => {
+                const card = document.createElement('div');
+                card.className = 'user-card';
+                card.innerHTML = `
+                    <div class="avatar-img">${user.avatar}</div>
+                    <div class="username">${user.name}</div>
+                `;
+                card.onclick = () => loginUser(user);
+                profilesContainer.insertBefore(card, document.getElementById('btn-open-create-user'));
+            });
+        }
+
+        function openUserModal() {
+            document.getElementById('username-input').value = '';
+            document.getElementById('user-modal').style.display = 'flex';
+        }
+
+        function closeUserModal() {
+            document.getElementById('user-modal').style.display = 'none';
+        }
+
+        function selectAvatarOption(element, emoji) {
+            document.querySelectorAll('.avatar-option').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+            selectedAvatar = emoji;
+        }
+
+        async function createUserProfile() {
+            const nameInput = document.getElementById('username-input').value.trim();
+            if (!nameInput) return alert("Please enter a name!");
+
+            const newUser = {
+                name: nameInput,
+                avatar: selectedAvatar,
+                createdAt: new Date().toISOString()
+            };
+
+            const tx = db.transaction("users", "readwrite");
+            const store = tx.objectStore("users");
+            const request = store.add(newUser);
+
+            request.onsuccess = (e) => {
+                newUser.id = e.target.result;
+                closeUserModal();
+                loadUserProfiles();
+            };
+        }
+
+        function loginUser(user) {
+            currentUser = user;
+            sessionStartTime = Date.now();
+            showScreen('dashboard-screen');
+        }
+
+        function logoutUser() {
+            // Save final session details
+            updateActiveSessionTime(true);
+            currentUser = null;
+            showScreen('user-screen');
+        }
+
+        async function updateActiveSessionTime(reset = false) {
+            if (!currentUser) return;
+            const now = Date.now();
+            const diffSec = Math.floor((now - sessionStartTime) / 1000);
+            if (diffSec <= 0) return;
+
+            // Save session logs to database
+            const tx = db.transaction("sessions", "readwrite");
+            const store = tx.objectStore("sessions");
+            store.add({
+                userId: currentUser.id,
+                date: new Date().toLocaleDateString(),
+                durationSeconds: diffSec
+            });
+
+            if (reset) {
+                sessionStartTime = now;
+            } else {
+                sessionStartTime = now; // update pointer
+            }
+        }
+
+        // LEVEL SELECTION
+        async function selectMode(mode) {
+            currentMode = mode;
+            selectedAnalyticsTab = mode;
+            
+            // Set dynamic titles
+            const modeTitles = {
+                tables: "✖️ Multiplication Tables (1-50)",
+                squares: "2️⃣ Squares Practice (1-100)",
+                roots: "📐 Square Roots Master",
+                cubes: "🧊 Cubes Training (1-30)"
+            };
+            document.getElementById('mode-title').innerText = modeTitles[mode];
+
+            await renderLevelsGrid();
+            showScreen('levels-screen');
+        }
+
+        async function getProgress(userId, mode) {
+            const tx = db.transaction("progress", "readonly");
+            const store = tx.objectStore("progress");
+            const index = store.index("userId_mode");
+            
+            return new Promise((resolve) => {
+                const req = index.getAll([userId, mode]);
+                req.onsuccess = () => {
+                    const results = req.result;
+                    if (results && results.length > 0) {
+                        resolve(results[0].unlocked || 1);
+                    } else {
+                        resolve(1); // default unlocked level is 1
+                    }
+                };
+            });
+        }
+
+        async function setProgress(userId, mode, level) {
+            const tx = db.transaction("progress", "readwrite");
+            const store = tx.objectStore("progress");
+            const index = store.index("userId_mode");
+
+            const existingProgress = await new Promise(resolve => {
+                const req = index.getAll([userId, mode]);
+                req.onsuccess = () => resolve(req.result[0]);
+            });
+
+            if (existingProgress) {
+                if (level > existingProgress.unlocked) {
+                    existingProgress.unlocked = level;
+                    store.put(existingProgress);
+                }
+            } else {
+                store.add({ userId, mode, unlocked: level });
+            }
+        }
+
+        async function renderLevelsGrid() {
+            const container = document.getElementById('levels-grid-container');
+            container.innerHTML = '';
+
+            const maxLevels = {
+                tables: 50,  // Level 1 = Table of 1, Level 50 = Table of 50
+                squares: 10, // Level 1 (1-10), Level 10 (91-100)
+                roots: 10,   // Level 1-5 (1 to 50 exact square roots), Level 6-10 (up to 10000 perfect roots)
+                cubes: 3     // Level 1 (1-10), Level 2 (11-20), Level 3 (21-30)
+            };
+
+            const total = maxLevels[currentMode];
+            const unlocked = await getProgress(currentUser.id, currentMode);
+
+            for (let i = 1; i <= total; i++) {
+                const btn = document.createElement('div');
+                const isBoss = (i % 5 === 0);
+                
+                btn.className = `level-button ${i > unlocked ? 'locked' : ''} ${isBoss ? 'boss' : ''}`;
+                btn.innerHTML = `<span class="level-number">${i}</span>`;
+
+                if (i <= unlocked) {
+                    // Check if level was perfectly completed in past
+                    btn.onclick = () => startLevel(i, isBoss);
+                    // Add badge markers if completed
+                    const statusSpan = document.createElement('span');
+                    statusSpan.className = 'level-status-icon';
+                    statusSpan.innerText = isBoss ? '👑' : '⭐';
+                    btn.appendChild(statusSpan);
+                } else {
+                    const statusSpan = document.createElement('span');
+                    statusSpan.className = 'level-status-icon';
+                    statusSpan.innerText = '🔒';
+                    btn.appendChild(statusSpan);
+                }
+
+                container.appendChild(btn);
+            }
+        }
+
+        // GAMEPLAY ENGINE
+        async function getMasteredQuestions(userId, mode) {
+            const tx = db.transaction("analytics", "readonly");
+            const store = tx.objectStore("analytics");
+            const index = store.index("userId_mode");
+            
+            return new Promise((resolve) => {
+                const req = index.getAll([userId, mode]);
+                req.onsuccess = () => {
+                    const mastered = req.result
+                        .filter(item => item.status === 'mastered')
+                        .map(item => item.questionKey);
+                    resolve(new Set(mastered));
+                };
+            });
+        }
+
+        // Find weakest questions for boss level
+        async function getWeakestQuestions(userId, mode, levelRangeStart, levelRangeEnd) {
+            const tx = db.transaction("analytics", "readonly");
+            const store = tx.objectStore("analytics");
+            const index = store.index("userId_mode");
+
+            return new Promise((resolve) => {
+                const req = index.getAll([userId, mode]);
+                req.onsuccess = () => {
+                    const records = req.result;
+                    // Filter based on question keys belonging to the requested levels
+                    // We generate valid keys for those levels to perform check
+                    const validKeys = new Set();
+                    for(let lvl = levelRangeStart; lvl <= levelRangeEnd; lvl++) {
+                        const levelKeys = getQuestionKeysForLevel(mode, lvl);
+                        levelKeys.forEach(k => validKeys.add(k));
+                    }
+
+                    const filtered = records.filter(r => validKeys.has(r.questionKey));
+                    
+                    // Sort by: highest avgTime first, or ratio of mistakes
+                    filtered.sort((a, b) => {
+                        // Priority 1: Accuracy ratio (lower correct attempts percentage first)
+                        const accA = a.totalAttempts > 0 ? (a.correctAttempts / a.totalAttempts) : 1;
+                        const accB = b.totalAttempts > 0 ? (b.correctAttempts / b.totalAttempts) : 1;
+                        if (accA !== accB) return accA - accB; 
+                        
+                        // Priority 2: Response time (slower first)
+                        return b.avgTime - a.avgTime;
+                    });
+
+                    resolve(filtered.map(f => f.questionKey));
+                };
+            });
+        }
+
+        // Helper to map levels to keys
+        function getQuestionKeysForLevel(mode, lvl) {
+            const keys = [];
+            if (mode === 'tables') {
+                for (let i = 1; i <= 10; i++) {
+                    keys.push(`${lvl}x${i}`);
+                }
+            } else if (mode === 'squares') {
+                const start = (lvl - 1) * 10 + 1;
+                for (let i = start; i < start + 10; i++) {
+                    keys.push(`sq_${i}`);
+                }
+            } else if (mode === 'roots') {
+                if (lvl <= 5) {
+                    const start = (lvl - 1) * 10 + 1;
+                    for (let i = start; i < start + 10; i++) {
+                        keys.push(`rt_${i * i}`);
+                    }
+                } else {
+                    const start = (lvl - 1) * 10 + 1;
+                    for (let i = start; i < start + 10; i++) {
+                        keys.push(`rt_${i * i}`);
+                    }
+                }
+            } else if (mode === 'cubes') {
+                const start = (lvl - 1) * 10 + 1;
+                for (let i = start; i < start + 10; i++) {
+                    keys.push(`cb_${i}`);
+                }
+            }
+            return keys;
+        }
+
+        async function startLevel(level, isBoss) {
+            activeLevel = level;
+            isBossLevel = isBoss;
+            currentQuestionIndex = 0;
+            correctAnswersCount = 0;
+            levelQuestionsRecord = [];
+            
+            // Build the question set
+            questionsList = [];
+            maxTimeLimit = isBossLevel ? 3 : 10;
+
+            const masteredSet = await getMasteredQuestions(currentUser.id, currentMode);
+
+            if (isBossLevel) {
+                // Fetch worst/slowest questions from levels (level-4) to (level-1)
+                const weakKeys = await getWeakestQuestions(currentUser.id, currentMode, level - 4, level - 1);
+                
+                // Construct questions list from weak keys
+                weakKeys.slice(0, 10).forEach(key => {
+                    questionsList.push(parseQuestionKey(key));
+                });
+
+                // Fill with general level questions if weak records are not enough
+                let pool = [];
+                for(let lvl = level - 4; lvl < level; lvl++) {
+                    pool = pool.concat(generateStandardLevelPool(lvl));
+                }
+                while(questionsList.length < 10 && pool.length > 0) {
+                    const randIdx = Math.floor(Math.random() * pool.length);
+                    const q = pool.splice(randIdx, 1)[0];
+                    if (!questionsList.some(item => item.key === q.key)) {
+                        questionsList.push(q);
+                    }
+                }
+            } else {
+                // Generate standard level pool
+                const pool = generateStandardLevelPool(activeLevel);
+                
+                // Separate mastered vs unmastered
+                const unmasteredPool = pool.filter(q => !masteredSet.has(q.key));
+                
+                // Add unmastered ones first, fill remainder with mastered if needed
+                let finalPool = [...unmasteredPool];
+                if (finalPool.length < 10) {
+                    const masteredPool = pool.filter(q => masteredSet.has(q.key));
+                    // Shuffle mastered pool
+                    masteredPool.sort(() => Math.random() - 0.5);
+                    finalPool = finalPool.concat(masteredPool.slice(0, 10 - finalPool.length));
+                }
+
+                // Shuffle questions so sequence is fresh
+                finalPool.sort(() => Math.random() - 0.5);
+                questionsList = finalPool.slice(0, 10);
+            }
+
+            // Set UI details
+            document.getElementById('play-title').innerText = isBossLevel ? `👹 Monster Boss Level ${activeLevel}` : `Level ${activeLevel} - Quiz`;
+            document.getElementById('boss-badge').style.display = isBossLevel ? 'block' : 'none';
+            if (isBossLevel) {
+                document.getElementById('q-card').classList.add('boss-card');
+            } else {
+                document.getElementById('q-card').classList.remove('boss-card');
+            }
+
+            showScreen('play-screen');
+            loadQuestion();
+        }
+
+        function parseQuestionKey(key) {
+            if (key.includes('x')) {
+                const parts = key.split('x');
+                const num = parseInt(parts[0]);
+                const multiplier = parseInt(parts[1]);
+                return {
+                    key: key,
+                    question: `${num} x ${multiplier}`,
+                    answer: num * multiplier,
+                    speech: `${num} times ${multiplier} is ${num * multiplier}`,
+                    optionsSeed: num * multiplier
+                };
+            } else if (key.startsWith('sq_')) {
+                const val = parseInt(key.split('_')[1]);
+                return {
+                    key: key,
+                    question: `${val}² = ?`,
+                    answer: val * val,
+                    speech: `Square of ${val} is ${val * val}`,
+                    optionsSeed: val * val
+                };
+            } else if (key.startsWith('rt_')) {
+                const val = parseInt(key.split('_')[1]);
+                const exact = Math.sqrt(val);
+                const isPerfect = Number.isInteger(exact);
+                const ans = isPerfect ? exact : parseFloat(exact.toFixed(2));
+                const speechText = isPerfect ? `Square root of ${val} is ${ans}` : `Square root of ${val} is approximately ${ans.toFixed(2)}`;
+                return {
+                    key: key,
+                    question: `√${val} = ?`,
+                    answer: ans,
+                    speech: speechText,
+                    optionsSeed: ans
+                };
+            } else if (key.startsWith('cb_')) {
+                const val = parseInt(key.split('_')[1]);
+                return {
+                    key: key,
+                    question: `${val}³ = ?`,
+                    answer: val * val * val,
+                    speech: `Cube of ${val} is ${val * val * val}`,
+                    optionsSeed: val * val * val
+                };
+            }
+        }
+
+        function generateStandardLevelPool(lvl) {
+            const pool = [];
+            if (currentMode === 'tables') {
+                // Table of lvl (e.g. lvl * 1 up to lvl * 10)
+                for (let i = 1; i <= 10; i++) {
+                    pool.push({
+                        key: `${lvl}x${i}`,
+                        question: `${lvl} x ${i} = ?`,
+                        answer: lvl * i,
+                        speech: `${lvl} times ${i} is ${lvl * i}`,
+                        optionsSeed: lvl * i
+                    });
+                }
+            } else if (currentMode === 'squares') {
+                // Level 1 is squares of 1-10, Level 2 is 11-20, etc.
+                const start = (lvl - 1) * 10 + 1;
+                for (let i = start; i < start + 10; i++) {
+                    pool.push({
+                        key: `sq_${i}`,
+                        question: `${i}² = ?`,
+                        answer: i * i,
+                        speech: `Square of ${i} is ${i * i}`,
+                        optionsSeed: i * i
+                    });
+                }
+            } else if (currentMode === 'roots') {
+                const start = (lvl - 1) * 10 + 1;
+                for (let i = start; i < start + 10; i++) {
+                    if (lvl <= 5) {
+                        // Consecutive numbers 1 to 50
+                        const exact = Math.sqrt(i);
+                        const isPerfect = Number.isInteger(exact);
+                        const ans = isPerfect ? exact : parseFloat(exact.toFixed(2));
+                        const speechText = isPerfect ? `Square root of ${i} is ${ans}` : `Square root of ${i} is approximately ${ans.toFixed(2)}`;
+                        pool.push({
+                            key: `rt_${i}`,
+                            question: `√${i} = ?`,
+                            answer: ans,
+                            speech: speechText,
+                            optionsSeed: ans
+                        });
+                    } else {
+                        // Perfect squares from 51 to 100
+                        const squareVal = i * i;
+                        pool.push({
+                            key: `rt_${squareVal}`,
+                            question: `√${squareVal} = ?`,
+                            answer: i,
+                            speech: `Square root of ${squareVal} is ${i}`,
+                            optionsSeed: i
+                        });
+                    }
+                }
+            } else if (currentMode === 'cubes') {
+                // Level 1 is cubes 1-10, Level 2 is 11-20, Level 3 is 21-30
+                const start = (lvl - 1) * 10 + 1;
+                for (let i = start; i < start + 10; i++) {
+                    pool.push({
+                        key: `cb_${i}`,
+                        question: `${i}³ = ?`,
+                        answer: i * i * i,
+                        speech: `Cube of ${i} is ${i * i * i}`,
+                        optionsSeed: i * i * i
+                    });
+                }
+            }
+            return pool;
+        }
+
+        function loadQuestion() {
+            if (currentQuestionIndex >= 10) {
+                endLevelPractice();
+                return;
+            }
+
+            // Update Progress Bar
+            const percent = (currentQuestionIndex / 10) * 100;
+            document.getElementById('level-progress-fill').style.width = `${percent}%`;
+
+            const currentQ = questionsList[currentQuestionIndex];
+            document.getElementById('question-text').innerText = currentQ.question;
+
+            // Generate options
+            const options = generateOptions(currentQ.answer, currentQ.optionsSeed);
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-button';
+                btn.innerText = opt;
+                btn.onclick = () => submitAnswer(opt, btn);
+                container.appendChild(btn);
+            });
+
+            // Start Timer
+            timeRemaining = maxTimeLimit;
+            document.getElementById('timer-value').innerText = timeRemaining;
+            updateTimerDisplay();
+            
+            questionStartTime = Date.now();
+
+            if (timeRemaining <= 3) {
+                SoundEffects.playHeartbeat();
+            }
+
+            if (gameTimer) clearInterval(gameTimer);
+            gameTimer = setInterval(() => {
+                timeRemaining--;
+                document.getElementById('timer-value').innerText = timeRemaining;
+                updateTimerDisplay();
+
+                if (timeRemaining <= 3 && timeRemaining > 0) {
+                    SoundEffects.playHeartbeat();
+                }
+
+                if (timeRemaining <= 0) {
+                    clearInterval(gameTimer);
+                    handleTimeout();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const circle = document.getElementById('timer-fg');
+            const radius = circle.r.baseVal.value;
+            const circumference = 2 * Math.PI * radius;
+            
+            circle.style.strokeDasharray = `${circumference} ${circumference}`;
+            const offset = circumference - (timeRemaining / maxTimeLimit) * circumference;
+            circle.style.strokeDashoffset = offset;
+
+            // Adjust color based on time remaining
+            if (timeRemaining <= 3) {
+                circle.style.stroke = "var(--danger)";
+            } else if (timeRemaining <= 6) {
+                circle.style.stroke = "var(--accent)";
+            } else {
+                circle.style.stroke = "var(--success)";
+            }
+        }
+
+        function generateOptions(correctAnswer, seedVal) {
+            const opts = new Set();
+            opts.add(correctAnswer);
+
+            const isDecimal = !Number.isInteger(correctAnswer);
+
+            if (isDecimal) {
+                // Generate close decimal options
+                while (opts.size < 6) {
+                    let offset = (Math.random() * 0.3 - 0.15).toFixed(2);
+                    let fakeAns = parseFloat((correctAnswer + parseFloat(offset)).toFixed(2));
+                    if (fakeAns > 0 && fakeAns !== correctAnswer) {
+                        opts.add(fakeAns);
+                    }
+                }
+            } else {
+                // Generate integer options
+                let range = Math.max(5, Math.floor(correctAnswer * 0.2));
+                while (opts.size < 6) {
+                    let offset = Math.floor(Math.random() * (range * 2)) - range;
+                    if (offset === 0) offset = Math.floor(Math.random() * 5) + 1;
+                    
+                    let fakeAns = correctAnswer + offset;
+                    if (fakeAns > 0 && fakeAns !== correctAnswer) {
+                        opts.add(fakeAns);
+                    }
+                }
+            }
+
+            // Convert to array and shuffle
+            return Array.from(opts).sort(() => Math.random() - 0.5);
+        }
+
+        function submitAnswer(selectedAnswer, buttonElement) {
+            clearInterval(gameTimer);
+            const duration = Date.now() - questionStartTime;
+            const currentQ = questionsList[currentQuestionIndex];
+            const isCorrect = (selectedAnswer === currentQ.answer);
+
+            // Log details
+            levelQuestionsRecord.push({
+                key: currentQ.key,
+                duration: duration,
+                isCorrect: isCorrect
+            });
+
+            // Disable all option buttons
+            const buttons = document.querySelectorAll('.option-button');
+            buttons.forEach(btn => btn.disabled = true);
+
+            if (isCorrect) {
+                correctAnswersCount++;
+                buttonElement.classList.add('correct');
+                
+                // Visual green glow / screen blink
+                document.getElementById('q-card').classList.add('correct-glow');
+                document.body.classList.add('screen-flash-green');
+                
+                // Play pleasant bell sound
+                SoundEffects.playCorrect();
+
+                setTimeout(() => {
+                    document.getElementById('q-card').classList.remove('correct-glow');
+                    document.body.classList.remove('screen-flash-green');
+                }, 500);
+                
+                // Continue game
+                setTimeout(() => {
+                    currentQuestionIndex++;
+                    loadQuestion();
+                }, 800);
+            } else {
+                buttonElement.classList.add('wrong');
+                highlightCorrectAnswer();
+                triggerWrongFeedback(currentQ);
+            }
+        }
+
+        function handleTimeout() {
+            // Disable buttons
+            const buttons = document.querySelectorAll('.option-button');
+            buttons.forEach(btn => btn.disabled = true);
+
+            const currentQ = questionsList[currentQuestionIndex];
+            
+            // Log as wrong
+            levelQuestionsRecord.push({
+                key: currentQ.key,
+                duration: maxTimeLimit * 1000,
+                isCorrect: false
+            });
+
+            highlightCorrectAnswer();
+            triggerWrongFeedback(currentQ);
+        }
+
+        function highlightCorrectAnswer() {
+            const currentQ = questionsList[currentQuestionIndex];
+            const buttons = document.querySelectorAll('.option-button');
+            buttons.forEach(btn => {
+                if (parseInt(btn.innerText) === currentQ.answer) {
+                    btn.classList.add('correct');
+                }
+            });
+        }
+
+        function triggerWrongFeedback(questionObj) {
+            // Visual red flash screen
+            document.body.classList.add('screen-flash-red');
+            setTimeout(() => {
+                document.body.classList.remove('screen-flash-red');
+            }, 600);
+
+            // TTS voice instruction
+            speakCorrectAnswer(questionObj.speech);
+
+            // Wait for feedback voice/reading time then proceed
+            setTimeout(() => {
+                currentQuestionIndex++;
+                loadQuestion();
+            }, 2500);
+        }
+
+        async function endLevelPractice() {
+            // Save results to analytics database
+            await saveLevelAnalytics();
+
+            // Set results screen values
+            const perfectScore = (correctAnswersCount === 10);
+            document.getElementById('result-details').innerText = `You answered ${correctAnswersCount} out of 10 questions correctly.`;
+            
+            // Update stars
+            const starsContainer = document.getElementById('result-stars');
+            if (correctAnswersCount === 10) {
+                starsContainer.innerText = '⭐⭐⭐';
+                document.getElementById('result-title').innerText = isBossLevel ? 'Boss Defeated! 🏆' : 'Perfect Victory! 🥇';
+                document.getElementById('result-title').style.color = 'var(--success)';
+            } else if (correctAnswersCount >= 8) {
+                starsContainer.innerText = '⭐⭐';
+                document.getElementById('result-title').innerText = 'Great Effort! 🌟';
+                document.getElementById('result-title').style.color = 'var(--accent)';
+            } else {
+                starsContainer.innerText = '⭐';
+                document.getElementById('result-title').innerText = 'Keep Training! 💪';
+                document.getElementById('result-title').style.color = 'var(--danger)';
+            }
+
+            // Next level button display logic
+            const nextBtn = document.getElementById('btn-next-level');
+            const retryBtn = document.getElementById('btn-retry-level');
+            
+            if (perfectScore) {
+                // Unlock next level
+                const unlocked = await getProgress(currentUser.id, currentMode);
+                if (activeLevel === unlocked) {
+                    await setProgress(currentUser.id, currentMode, activeLevel + 1);
+                }
+                nextBtn.style.display = 'block';
+                retryBtn.style.display = 'none';
+            } else {
+                // Must repeat
+                nextBtn.style.display = 'none';
+                retryBtn.style.display = 'block';
+            }
+
+            showScreen('results-screen');
+        }
+
+        async function saveLevelAnalytics() {
+            // 1. Fetch all existing records for this user & mode first
+            const existingRecords = await new Promise(resolve => {
+                const tx = db.transaction("analytics", "readonly");
+                const store = tx.objectStore("analytics");
+                const index = store.index("userId_mode");
+                const req = index.getAll([currentUser.id, currentMode]);
+                req.onsuccess = () => resolve(req.result || []);
+                req.onerror = () => resolve([]);
+            });
+
+            // Map existing records by questionKey
+            const existingMap = new Map();
+            existingRecords.forEach(r => existingMap.set(r.questionKey, r));
+
+            // 2. Open a single write transaction and process all updates
+            const writeTx = db.transaction("analytics", "readwrite");
+            const writeStore = writeTx.objectStore("analytics");
+
+            for (const record of levelQuestionsRecord) {
+                const existing = existingMap.get(record.key);
+
+                if (existing) {
+                    existing.totalAttempts += 1;
+                    if (record.isCorrect) {
+                        existing.correctAttempts += 1;
+                        existing.bestTime = Math.min(existing.bestTime, record.duration);
+                        existing.avgTime = Math.round(((existing.avgTime * (existing.correctAttempts - 1)) + record.duration) / existing.correctAttempts);
+                    }
+                    
+                    // Determine mastery
+                    if (record.isCorrect && record.duration <= 1000) {
+                        existing.status = 'mastered';
+                    } else if (existing.status !== 'mastered') {
+                        existing.status = 'learning';
+                    }
+
+                    writeStore.put(existing);
+                } else {
+                    const newAnalytic = {
+                        userId: currentUser.id,
+                        mode: currentMode,
+                        questionKey: record.key,
+                        totalAttempts: 1,
+                        correctAttempts: record.isCorrect ? 1 : 0,
+                        bestTime: record.isCorrect ? record.duration : 99999,
+                        avgTime: record.isCorrect ? record.duration : 99999,
+                        status: (record.isCorrect && record.duration <= 1000) ? 'mastered' : 'learning'
+                    };
+                    writeStore.add(newAnalytic);
+                }
+            }
+
+            return new Promise(resolve => {
+                writeTx.oncomplete = () => resolve();
+                writeTx.onerror = () => resolve();
+            });
+        }
+
+        function retryLevel() {
+            startLevel(activeLevel, isBossLevel);
+        }
+
+        function playNextLevel() {
+            const maxLevels = { tables: 50, squares: 10, roots: 10, cubes: 3 };
+            if (activeLevel < maxLevels[currentMode]) {
+                const nextLvl = activeLevel + 1;
+                const isBoss = (nextLvl % 5 === 0);
+                startLevel(nextLvl, isBoss);
+            } else {
+                showScreen('levels-screen');
+                renderLevelsGrid();
+            }
+        }
+
+        function confirmQuit() {
+            if (confirm("Are you sure you want to quit this training level? progress won't be saved.")) {
+                clearInterval(gameTimer);
+                showScreen('levels-screen');
+                renderLevelsGrid();
+            }
+        }
+
+        // ANALYTICS & VISUALIZATION
+        function switchAnalyticsTab(tab) {
+            selectedAnalyticsTab = tab;
+            
+            // Set styles
+            const tabs = ['tables', 'squares', 'roots', 'cubes'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-btn-${t}`);
+                if (t === tab) {
+                    btn.className = 'btn btn-primary';
+                } else {
+                    btn.className = 'btn btn-secondary';
+                }
+            });
+
+            renderAnalyticsMatrix();
+        }
+
+        async function renderAnalytics() {
+            if (!currentUser) return;
+
+            // Load aggregate statistics
+            const tx = db.transaction(["analytics", "sessions"], "readonly");
+            const analStore = tx.objectStore("analytics");
+            const sessionsStore = tx.objectStore("sessions");
+
+            // Compute playtime
+            const sessions = await new Promise(resolve => {
+                const req = sessionsStore.getAll();
+                req.onsuccess = () => resolve(req.result.filter(s => s.userId === currentUser.id));
+            });
+
+            let totalPlaySec = sessions.reduce((acc, s) => acc + s.durationSeconds, 0);
+            let timeStr = `${Math.floor(totalPlaySec / 60)}m ${totalPlaySec % 60}s`;
+            document.getElementById('stat-total-time').innerText = timeStr;
+
+            // Compute mastered items and accuracy
+            const analyticsRecords = await new Promise(resolve => {
+                const req = analStore.getAll();
+                req.onsuccess = () => resolve(req.result.filter(a => a.userId === currentUser.id));
+            });
+
+            const masteredCount = analyticsRecords.filter(r => r.status === 'mastered').length;
+            document.getElementById('stat-mastered-count').innerText = masteredCount;
+
+            const totalAttemptsSum = analyticsRecords.reduce((acc, r) => acc + r.totalAttempts, 0);
+            const correctAttemptsSum = analyticsRecords.reduce((acc, r) => acc + r.correctAttempts, 0);
+            const accuracy = totalAttemptsSum > 0 ? Math.round((correctAttemptsSum / totalAttemptsSum) * 100) : 0;
+            document.getElementById('stat-accuracy').innerText = `${accuracy}%`;
+
+            // Switch default tab
+            switchAnalyticsTab(selectedAnalyticsTab);
+        }
+
+        async function renderAnalyticsMatrix() {
+            const container = document.getElementById('matrix-container');
+            container.innerHTML = '';
+
+            // Fetch current user analytics records for active tab
+            const tx = db.transaction("analytics", "readonly");
+            const store = tx.objectStore("analytics");
+            const index = store.index("userId_mode");
+            const records = await new Promise(resolve => {
+                const req = index.getAll([currentUser.id, selectedAnalyticsTab]);
+                req.onsuccess = () => resolve(req.result);
+            });
+
+            const recordsMap = new Map();
+            records.forEach(r => recordsMap.set(r.questionKey, r));
+
+            if (selectedAnalyticsTab === 'tables') {
+                document.getElementById('analytics-matrix-title').innerText = "Tables 1-50 x 10 Grid";
+                
+                const grid = document.createElement('div');
+                grid.className = 'tables-matrix-grid';
+                
+                // Add header row
+                const emptyHeader = document.createElement('div');
+                emptyHeader.className = 'matrix-cell header-cell';
+                emptyHeader.innerText = 'Table';
+                grid.appendChild(emptyHeader);
+
+                for (let col = 1; col <= 10; col++) {
+                    const colHeader = document.createElement('div');
+                    colHeader.className = 'matrix-cell header-cell';
+                    colHeader.innerText = `x${col}`;
+                    grid.appendChild(colHeader);
+                }
+
+                // Add rows
+                for (let row = 1; row <= 50; row++) {
+                    // Row Label
+                    const rowLabel = document.createElement('div');
+                    rowLabel.className = 'matrix-cell header-cell';
+                    rowLabel.innerText = `${row}`;
+                    grid.appendChild(rowLabel);
+
+                    for (let col = 1; col <= 10; col++) {
+                        const key = `${row}x${col}`;
+                        const record = recordsMap.get(key);
+                        
+                        const cell = document.createElement('div');
+                        cell.className = 'matrix-cell';
+                        
+                        if (record) {
+                            const speedSec = (record.avgTime / 1000).toFixed(1);
+                            cell.className += ` ${getColorClassForTime(record.avgTime, record.correctAttempts > 0)}`;
+                            cell.innerText = `${row * col}`;
+                            cell.setAttribute('data-tooltip', `Time: ${speedSec}s | Att: ${record.totalAttempts}`);
+                            
+                            if (record.status === 'mastered') {
+                                const tick = document.createElement('span');
+                                tick.className = 'tick-mark';
+                                tick.innerText = '✔️';
+                                cell.appendChild(tick);
+                            }
+                        } else {
+                            cell.className += ' cell-unattempted';
+                            cell.innerText = `${row * col}`;
+                            cell.setAttribute('data-tooltip', 'Unattempted');
+                        }
+
+                        grid.appendChild(cell);
+                    }
+                }
+                container.appendChild(grid);
+
+            } else if (selectedAnalyticsTab === 'squares') {
+                document.getElementById('analytics-matrix-title').innerText = "Squares 1 - 100 Tracker";
+                
+                const grid = document.createElement('div');
+                grid.className = 'grid-100';
+
+                for (let i = 1; i <= 100; i++) {
+                    const key = `sq_${i}`;
+                    const record = recordsMap.get(key);
+                    
+                    const cell = document.createElement('div');
+                    cell.className = 'matrix-cell';
+                    cell.style.aspectRatio = '1';
+                    
+                    if (record) {
+                        const speedSec = (record.avgTime / 1000).toFixed(1);
+                        cell.className += ` ${getColorClassForTime(record.avgTime, record.correctAttempts > 0)}`;
+                        cell.innerHTML = `<span style="font-size:0.75rem;">${i}²</span><strong>${i*i}</strong>`;
+                        cell.setAttribute('data-tooltip', `Time: ${speedSec}s | Att: ${record.totalAttempts}`);
+                        
+                        if (record.status === 'mastered') {
+                            const tick = document.createElement('span');
+                            tick.className = 'tick-mark';
+                            tick.innerText = '✔️';
+                            cell.appendChild(tick);
+                        }
+                    } else {
+                        cell.className += ' cell-unattempted';
+                        cell.innerHTML = `<span style="font-size:0.75rem;">${i}²</span><strong>${i*i}</strong>`;
+                        cell.setAttribute('data-tooltip', 'Unattempted');
+                    }
+                    grid.appendChild(cell);
+                }
+                container.appendChild(grid);
+
+            } else if (selectedAnalyticsTab === 'roots') {
+                document.getElementById('analytics-matrix-title').innerText = "Square Roots Grid";
+                
+                const grid = document.createElement('div');
+                grid.className = 'grid-100';
+
+                // Display roots (1 to 100)
+                for (let i = 1; i <= 100; i++) {
+                    const isConsecutive = (i <= 50);
+                    const val = isConsecutive ? i : (i * i);
+                    const key = `rt_${val}`;
+                    const record = recordsMap.get(key);
+                    
+                    const cell = document.createElement('div');
+                    cell.className = 'matrix-cell';
+                    cell.style.aspectRatio = '1';
+
+                    const exact = Math.sqrt(val);
+                    const isPerfect = Number.isInteger(exact);
+                    const displayAns = isPerfect ? exact : parseFloat(exact.toFixed(2));
+
+                    if (record) {
+                        const speedSec = (record.avgTime / 1000).toFixed(1);
+                        cell.className += ` ${getColorClassForTime(record.avgTime, record.correctAttempts > 0)}`;
+                        cell.innerHTML = `<span style="font-size:0.75rem;">√${val}</span><strong>${displayAns}</strong>`;
+                        cell.setAttribute('data-tooltip', `Time: ${speedSec}s | Att: ${record.totalAttempts}`);
+                        
+                        if (record.status === 'mastered') {
+                            const tick = document.createElement('span');
+                            tick.className = 'tick-mark';
+                            tick.innerText = '✔️';
+                            cell.appendChild(tick);
+                        }
+                    } else {
+                        cell.className += ' cell-unattempted';
+                        cell.innerHTML = `<span style="font-size:0.75rem;">√${val}</span><strong>${displayAns}</strong>`;
+                        cell.setAttribute('data-tooltip', 'Unattempted');
+                    }
+                    grid.appendChild(cell);
+                }
+                container.appendChild(grid);
+
+            } else if (selectedAnalyticsTab === 'cubes') {
+                document.getElementById('analytics-matrix-title').innerText = "Cubes 1 - 30 Tracker";
+                
+                const grid = document.createElement('div');
+                grid.className = 'grid-100';
+
+                for (let i = 1; i <= 30; i++) {
+                    const key = `cb_${i}`;
+                    const record = recordsMap.get(key);
+                    
+                    const cell = document.createElement('div');
+                    cell.className = 'matrix-cell';
+                    cell.style.aspectRatio = '1';
+
+                    if (record) {
+                        const speedSec = (record.avgTime / 1000).toFixed(1);
+                        cell.className += ` ${getColorClassForTime(record.avgTime, record.correctAttempts > 0)}`;
+                        cell.innerHTML = `<span style="font-size:0.75rem;">${i}³</span><strong>${i*i*i}</strong>`;
+                        cell.setAttribute('data-tooltip', `Time: ${speedSec}s | Att: ${record.totalAttempts}`);
+                        
+                        if (record.status === 'mastered') {
+                            const tick = document.createElement('span');
+                            tick.className = 'tick-mark';
+                            tick.innerText = '✔️';
+                            cell.appendChild(tick);
+                        }
+                    } else {
+                        cell.className += ' cell-unattempted';
+                        cell.innerHTML = `<span style="font-size:0.75rem;">${i}³</span><strong>${i*i*i}</strong>`;
+                        cell.setAttribute('data-tooltip', 'Unattempted');
+                    }
+                    grid.appendChild(cell);
+                }
+                container.appendChild(grid);
+            }
+        }
+    </script>
+</body>
+</html>
