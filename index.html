@@ -834,6 +834,138 @@
             grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
             gap: 8px;
         }
+
+        /* Mobile App optimization styles */
+        .avg-time-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(79, 70, 229, 0.15);
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            font-family: var(--font-display);
+            margin: 10px 0 20px 0;
+            border: 1px dashed var(--primary);
+        }
+
+        [data-theme="dark"] .avg-time-badge {
+            background: rgba(165, 180, 252, 0.15);
+            color: var(--primary-light);
+            border-color: var(--primary-light);
+        }
+
+        /* Smooth delay fade-in for options */
+        .options-grid {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            pointer-events: none;
+        }
+
+        .options-grid.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .option-skeleton {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .skeleton-btn {
+            height: 80px;
+            background: linear-gradient(90deg, rgba(0,0,0,0.03) 25%, rgba(0,0,0,0.08) 50%, rgba(0,0,0,0.03) 75%);
+            background-size: 200% 100%;
+            animation: loading-shimmer 1.5s infinite;
+            border-radius: var(--radius-md);
+        }
+
+        @keyframes loading-shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Premium Mobile layout container */
+        @media (max-width: 768px) {
+            body {
+                font-size: 14px;
+            }
+            header {
+                padding: 12px 20px;
+            }
+            .logo {
+                font-size: 1.6rem;
+            }
+            .screen {
+                padding: 20px 15px;
+            }
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            .dashboard-card {
+                padding: 25px 20px;
+            }
+            .dashboard-card-icon {
+                font-size: 3rem;
+                margin-bottom: 12px;
+            }
+            .level-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 10px;
+            }
+            .level-button {
+                padding: 5px;
+            }
+            .level-number {
+                font-size: 1.4rem;
+            }
+            .question-card {
+                font-size: 2.5rem;
+                padding: 35px 15px;
+                min-height: 140px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .boss-warning-badge {
+                font-size: 0.75rem;
+                width: 90%;
+                text-align: center;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .options-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+            .option-button {
+                padding: 16px 10px;
+                font-size: 1.4rem;
+            }
+            .option-skeleton {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+            .session-summary-box {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            .summary-stat-card {
+                padding: 15px 10px;
+            }
+            .summary-stat-card .value {
+                font-size: 1.5rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -866,6 +998,7 @@
     <!-- MAIN DASHBOARD -->
     <div id="dashboard-screen" class="screen">
         <h1 style="font-family: var(--font-display); font-size: 2.5rem; margin-bottom: 8px;">Dashboard</h1>
+        <div class="avg-time-badge" id="dashboard-avg-time-badge" style="display: none;">⚡ Avg Time: <span id="dashboard-avg-time-val">0.0s</span></div>
         <p style="color: var(--text-muted); margin-bottom: 30px;">Choose a practice area to start your training adventure!</p>
 
         <div class="dashboard-grid">
@@ -904,6 +1037,10 @@
                 <h1 id="mode-title" style="display: inline-block; font-family: var(--font-display); vertical-align: middle;">Math Practice</h1>
             </div>
         </div>
+        <!-- Progress stats -->
+        <div style="margin-bottom: 20px; font-weight: bold; font-family: var(--font-sans);" id="levels-progress-text">
+            Mastery: 0 / 500 questions
+        </div>
         <div class="level-grid" id="levels-grid-container">
             <!-- Dynamically populated levels -->
         </div>
@@ -914,9 +1051,9 @@
         <div class="play-container">
             <div class="game-header">
                 <button class="btn btn-icon" onclick="confirmQuit()" id="quit-game-btn">❌</button>
-                <div style="text-align: center;">
+                <div style="text-align: center; flex-grow: 1;">
                     <div style="font-weight: 700; font-size: 1.1rem; color: var(--text-muted);" id="play-title">Level Practice</div>
-                    <div class="score-progress-container" style="width: 200px;">
+                    <div class="score-progress-container" style="width: 100%; max-width: 250px; margin: 8px auto 0 auto;">
                         <div class="score-progress-bar" id="level-progress-fill"></div>
                     </div>
                 </div>
@@ -933,6 +1070,16 @@
             <div class="glass-card question-card" id="q-card">
                 <div class="boss-warning-badge" id="boss-badge" style="display: none;">👹 BOSS LEVEL - ANSWER IN &lt; 3 SECONDS!</div>
                 <div id="question-text">5 x 6 = ?</div>
+            </div>
+
+            <!-- Skeleton Loader during 1 second option delay -->
+            <div class="option-skeleton" id="options-skeleton" style="display: none;">
+                <div class="skeleton-btn"></div>
+                <div class="skeleton-btn"></div>
+                <div class="skeleton-btn"></div>
+                <div class="skeleton-btn"></div>
+                <div class="skeleton-btn"></div>
+                <div class="skeleton-btn"></div>
             </div>
 
             <!-- 6 Options Grid -->
@@ -1191,6 +1338,14 @@
         let sessionStartTime = 0;
         let sessionTimerInterval = null;
 
+        // Cache for all items sorted by difficulty per mode
+        let difficultySortedPools = {
+            tables: [],
+            squares: [],
+            roots: [],
+            cubes: []
+        };
+
         // Color coding logic
         function getColorClassForTime(timeMs, isCorrect) {
             if (!isCorrect) return 'cell-bad';
@@ -1215,6 +1370,9 @@
             // Periodically log active session time
             sessionStartTime = Date.now();
             sessionTimerInterval = setInterval(updateActiveSessionTime, 5000);
+
+            // Pre-calculate and sort difficulty pools
+            initializeDifficultySortedPools();
         });
 
         // Theme management
@@ -1243,8 +1401,124 @@
                 document.getElementById('change-profile-btn').style.display = 'inline-block';
                 if (currentUser) {
                     document.getElementById('current-user-display').innerText = `${currentUser.avatar} ${currentUser.name}`;
+                    if (screenId === 'dashboard-screen') {
+                        updateDashboardStats();
+                    }
                 }
             }
+        }
+
+        async function updateDashboardStats() {
+            if (!currentUser) return;
+            const tx = db.transaction("analytics", "readonly");
+            const store = tx.objectStore("analytics");
+            const index = store.index("userId");
+            
+            const records = await new Promise(resolve => {
+                const req = index.getAll(currentUser.id);
+                req.onsuccess = () => resolve(req.result || []);
+                req.onerror = () => resolve([]);
+            });
+
+            const correctRecords = records.filter(r => r.correctAttempts > 0 && r.avgTime < 99999);
+            const badge = document.getElementById('dashboard-avg-time-badge');
+            if (correctRecords.length > 0) {
+                const totalAvgTime = correctRecords.reduce((acc, r) => acc + r.avgTime, 0);
+                const overallAvg = (totalAvgTime / correctRecords.length / 1000).toFixed(1);
+                document.getElementById('dashboard-avg-time-val').innerText = `${overallAvg}s`;
+                badge.style.display = 'inline-flex';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        // Difficulty metrics generator
+        function initializeDifficultySortedPools() {
+            // 1. Tables Pool (2-50 x 2-10) -> skip multiplication by 1
+            const tables = [];
+            for (let row = 2; row <= 50; row++) {
+                for (let col = 2; col <= 10; col++) {
+                    // Complexity metric: factor in size, multiplier, and easier numbers (like 2, 10)
+                    let score = row * col;
+                    // Lower score means easier
+                    if (row === 10 || col === 10) score -= 500;
+                    if (row === 2 || col === 2) score -= 300;
+                    tables.push({
+                        key: `${row}x${col}`,
+                        question: `${row} x ${col} = ?`,
+                        answer: row * col,
+                        speech: `${row} times ${col} is ${row * col}`,
+                        optionsSeed: row * col,
+                        difficulty: score
+                    });
+                }
+            }
+            tables.sort((a, b) => a.difficulty - b.difficulty);
+            difficultySortedPools.tables = tables;
+
+            // 2. Squares Pool (1-100) -> 100 items
+            const squares = [];
+            for (let i = 1; i <= 100; i++) {
+                let score = i * i;
+                if (i <= 10) score -= 50000;
+                squares.push({
+                    key: `sq_${i}`,
+                    question: `${i}² = ?`,
+                    answer: i * i,
+                    speech: `Square of ${i} is ${i * i}`,
+                    optionsSeed: i * i,
+                    difficulty: score
+                });
+            }
+            squares.sort((a, b) => a.difficulty - b.difficulty);
+            difficultySortedPools.squares = squares;
+
+            // 3. Roots Pool (1-100) -> 100 items
+            const roots = [];
+            for (let i = 1; i <= 100; i++) {
+                // 1 to 50 are consecutive roots (including decimal roots), 51 to 100 are perfect roots
+                if (i <= 50) {
+                    const exact = Math.sqrt(i);
+                    const isPerfect = Number.isInteger(exact);
+                    const ans = isPerfect ? exact : parseFloat(exact.toFixed(2));
+                    const speechText = isPerfect ? `Square root of ${i} is ${ans}` : `Square root of ${i} is approximately ${ans.toFixed(2)}`;
+                    roots.push({
+                        key: `rt_${i}`,
+                        question: `√${i} = ?`,
+                        answer: ans,
+                        speech: speechText,
+                        optionsSeed: ans,
+                        difficulty: isPerfect ? (i - 200) : (i * 10)
+                    });
+                } else {
+                    const squareVal = i * i;
+                    roots.push({
+                        key: `rt_${squareVal}`,
+                        question: `√${squareVal} = ?`,
+                        answer: i,
+                        speech: `Square root of ${squareVal} is ${i}`,
+                        optionsSeed: i,
+                        difficulty: i * 5
+                    });
+                }
+            }
+            roots.sort((a, b) => a.difficulty - b.difficulty);
+            difficultySortedPools.roots = roots;
+
+            // 4. Cubes Pool (1-30) -> 30 items
+            const cubes = [];
+            for (let i = 1; i <= 30; i++) {
+                cubes.push({
+                    key: `cb_${i}`,
+                    question: `${i}³ = ?`,
+                    answer: i * i * i,
+                    speech: `Cube of ${i} is ${i * i * i}`,
+                    optionsSeed: i * i * i,
+                    difficulty: i * i * i
+                });
+            }
+            cubes.sort((a, b) => a.difficulty - b.difficulty);
+            difficultySortedPools.cubes = cubes;
         }
 
         // Profile Selection Handlers
@@ -1405,14 +1679,18 @@
             container.innerHTML = '';
 
             const maxLevels = {
-                tables: 50,  // Level 1 = Table of 1, Level 50 = Table of 50
-                squares: 10, // Level 1 (1-10), Level 10 (91-100)
-                roots: 10,   // Level 1-5 (1 to 50 exact square roots), Level 6-10 (up to 10000 perfect roots)
-                cubes: 3     // Level 1 (1-10), Level 2 (11-20), Level 3 (21-30)
+                tables: 50,  // Sorted levels 1 to 50
+                squares: 10, // Sorted levels 1 to 10
+                roots: 10,   // Sorted levels 1 to 10
+                cubes: 3     // Sorted levels 1 to 3
             };
 
             const total = maxLevels[currentMode];
             const unlocked = await getProgress(currentUser.id, currentMode);
+            const masteredSet = await getMasteredQuestions(currentUser.id, currentMode);
+            const totalQuestions = difficultySortedPools[currentMode].length;
+
+            document.getElementById('levels-progress-text').innerText = `Mastery: ${masteredSet.size} / ${totalQuestions} questions mastered (correctly answered in < 2 seconds)`;
 
             for (let i = 1; i <= total; i++) {
                 const btn = document.createElement('div');
@@ -1468,7 +1746,6 @@
                 req.onsuccess = () => {
                     const records = req.result;
                     // Filter based on question keys belonging to the requested levels
-                    // We generate valid keys for those levels to perform check
                     const validKeys = new Set();
                     for(let lvl = levelRangeStart; lvl <= levelRangeEnd; lvl++) {
                         const levelKeys = getQuestionKeysForLevel(mode, lvl);
@@ -1479,12 +1756,9 @@
                     
                     // Sort by: highest avgTime first, or ratio of mistakes
                     filtered.sort((a, b) => {
-                        // Priority 1: Accuracy ratio (lower correct attempts percentage first)
                         const accA = a.totalAttempts > 0 ? (a.correctAttempts / a.totalAttempts) : 1;
                         const accB = b.totalAttempts > 0 ? (b.correctAttempts / b.totalAttempts) : 1;
                         if (accA !== accB) return accA - accB; 
-                        
-                        // Priority 2: Response time (slower first)
                         return b.avgTime - a.avgTime;
                     });
 
@@ -1493,37 +1767,12 @@
             });
         }
 
-        // Helper to map levels to keys
+        // Helper to map levels to keys in the difficulty sorted lists
         function getQuestionKeysForLevel(mode, lvl) {
-            const keys = [];
-            if (mode === 'tables') {
-                for (let i = 1; i <= 10; i++) {
-                    keys.push(`${lvl}x${i}`);
-                }
-            } else if (mode === 'squares') {
-                const start = (lvl - 1) * 10 + 1;
-                for (let i = start; i < start + 10; i++) {
-                    keys.push(`sq_${i}`);
-                }
-            } else if (mode === 'roots') {
-                if (lvl <= 5) {
-                    const start = (lvl - 1) * 10 + 1;
-                    for (let i = start; i < start + 10; i++) {
-                        keys.push(`rt_${i * i}`);
-                    }
-                } else {
-                    const start = (lvl - 1) * 10 + 1;
-                    for (let i = start; i < start + 10; i++) {
-                        keys.push(`rt_${i * i}`);
-                    }
-                }
-            } else if (mode === 'cubes') {
-                const start = (lvl - 1) * 10 + 1;
-                for (let i = start; i < start + 10; i++) {
-                    keys.push(`cb_${i}`);
-                }
-            }
-            return keys;
+            const pool = difficultySortedPools[mode];
+            const start = (lvl - 1) * 10;
+            const levelSlice = pool.slice(start, start + 10);
+            return levelSlice.map(q => q.key);
         }
 
         async function startLevel(level, isBoss) {
@@ -1564,14 +1813,13 @@
                 // Generate standard level pool
                 const pool = generateStandardLevelPool(activeLevel);
                 
-                // Separate mastered vs unmastered
+                // Separate mastered vs unmastered (Questions answered < 2s are removed/skipped)
                 const unmasteredPool = pool.filter(q => !masteredSet.has(q.key));
                 
                 // Add unmastered ones first, fill remainder with mastered if needed
                 let finalPool = [...unmasteredPool];
                 if (finalPool.length < 10) {
                     const masteredPool = pool.filter(q => masteredSet.has(q.key));
-                    // Shuffle mastered pool
                     masteredPool.sort(() => Math.random() - 0.5);
                     finalPool = finalPool.concat(masteredPool.slice(0, 10 - finalPool.length));
                 }
@@ -1595,6 +1843,11 @@
         }
 
         function parseQuestionKey(key) {
+            // Find key in pre-calculated pools
+            const matched = difficultySortedPools[currentMode].find(item => item.key === key);
+            if (matched) return matched;
+            
+            // Fallback parsing
             if (key.includes('x')) {
                 const parts = key.split('x');
                 const num = parseInt(parts[0]);
@@ -1641,98 +1894,42 @@
         }
 
         function generateStandardLevelPool(lvl) {
-            const pool = [];
-            if (currentMode === 'tables') {
-                // Table of lvl (e.g. lvl * 1 up to lvl * 10)
-                for (let i = 1; i <= 10; i++) {
-                    pool.push({
-                        key: `${lvl}x${i}`,
-                        question: `${lvl} x ${i} = ?`,
-                        answer: lvl * i,
-                        speech: `${lvl} times ${i} is ${lvl * i}`,
-                        optionsSeed: lvl * i
-                    });
-                }
-            } else if (currentMode === 'squares') {
-                // Level 1 is squares of 1-10, Level 2 is 11-20, etc.
-                const start = (lvl - 1) * 10 + 1;
-                for (let i = start; i < start + 10; i++) {
-                    pool.push({
-                        key: `sq_${i}`,
-                        question: `${i}² = ?`,
-                        answer: i * i,
-                        speech: `Square of ${i} is ${i * i}`,
-                        optionsSeed: i * i
-                    });
-                }
-            } else if (currentMode === 'roots') {
-                const start = (lvl - 1) * 10 + 1;
-                for (let i = start; i < start + 10; i++) {
-                    if (lvl <= 5) {
-                        // Consecutive numbers 1 to 50
-                        const exact = Math.sqrt(i);
-                        const isPerfect = Number.isInteger(exact);
-                        const ans = isPerfect ? exact : parseFloat(exact.toFixed(2));
-                        const speechText = isPerfect ? `Square root of ${i} is ${ans}` : `Square root of ${i} is approximately ${ans.toFixed(2)}`;
-                        pool.push({
-                            key: `rt_${i}`,
-                            question: `√${i} = ?`,
-                            answer: ans,
-                            speech: speechText,
-                            optionsSeed: ans
-                        });
-                    } else {
-                        // Perfect squares from 51 to 100
-                        const squareVal = i * i;
-                        pool.push({
-                            key: `rt_${squareVal}`,
-                            question: `√${squareVal} = ?`,
-                            answer: i,
-                            speech: `Square root of ${squareVal} is ${i}`,
-                            optionsSeed: i
-                        });
-                    }
-                }
-            } else if (currentMode === 'cubes') {
-                // Level 1 is cubes 1-10, Level 2 is 11-20, Level 3 is 21-30
-                const start = (lvl - 1) * 10 + 1;
-                for (let i = start; i < start + 10; i++) {
-                    pool.push({
-                        key: `cb_${i}`,
-                        question: `${i}³ = ?`,
-                        answer: i * i * i,
-                        speech: `Cube of ${i} is ${i * i * i}`,
-                        optionsSeed: i * i * i
-                    });
-                }
-            }
-            return pool;
+            const pool = difficultySortedPools[currentMode];
+            const start = (lvl - 1) * 10;
+            return pool.slice(start, start + 10);
         }
 
+        let optionDelayTimeout = null;
+
         function loadQuestion() {
-            if (currentQuestionIndex >= 10) {
+            if (currentQuestionIndex >= questionsList.length) {
                 endLevelPractice();
                 return;
             }
 
             // Update Progress Bar
-            const percent = (currentQuestionIndex / 10) * 100;
+            const percent = (currentQuestionIndex / questionsList.length) * 100;
             document.getElementById('level-progress-fill').style.width = `${percent}%`;
 
             const currentQ = questionsList[currentQuestionIndex];
             document.getElementById('question-text').innerText = currentQ.question;
 
-            // Generate options
+            // Display Skeleton Loader during 1 second option delay
+            const optionsSkeleton = document.getElementById('options-skeleton');
+            const optionsContainer = document.getElementById('options-container');
+            
+            optionsSkeleton.style.display = 'grid';
+            optionsContainer.classList.remove('visible');
+            optionsContainer.innerHTML = '';
+
             const options = generateOptions(currentQ.answer, currentQ.optionsSeed);
-            const container = document.getElementById('options-container');
-            container.innerHTML = '';
 
             options.forEach(opt => {
                 const btn = document.createElement('button');
                 btn.className = 'option-button';
                 btn.innerText = opt;
                 btn.onclick = () => submitAnswer(opt, btn);
-                container.appendChild(btn);
+                optionsContainer.appendChild(btn);
             });
 
             // Start Timer
@@ -1760,6 +1957,13 @@
                     clearInterval(gameTimer);
                     handleTimeout();
                 }
+            }, 1000);
+
+            // After exactly 1 second, make option buttons visible
+            if (optionDelayTimeout) clearTimeout(optionDelayTimeout);
+            optionDelayTimeout = setTimeout(() => {
+                optionsSkeleton.style.display = 'none';
+                optionsContainer.classList.add('visible');
             }, 1000);
         }
 
@@ -1833,7 +2037,16 @@
             buttons.forEach(btn => btn.disabled = true);
 
             if (isCorrect) {
-                correctAnswersCount++;
+                // If question was answered in 4 seconds or more, it's a weak response, repeat it!
+                if (duration >= 4000) {
+                    // Push back to try again later
+                    questionsList.push(currentQ);
+                    // Shuffle the remaining questions in the list to make it unpredictable
+                    shuffleRemainingQuestions();
+                } else {
+                    correctAnswersCount++;
+                }
+
                 buttonElement.classList.add('correct');
                 
                 // Visual green glow / screen blink
@@ -1854,9 +2067,22 @@
                     loadQuestion();
                 }, 800);
             } else {
+                // Incorrect answers are also pushed back to repeat until mastered
+                questionsList.push(currentQ);
+                shuffleRemainingQuestions();
+
                 buttonElement.classList.add('wrong');
                 highlightCorrectAnswer();
                 triggerWrongFeedback(currentQ);
+            }
+        }
+
+        function shuffleRemainingQuestions() {
+            if (currentQuestionIndex + 1 < questionsList.length) {
+                const remaining = questionsList.slice(currentQuestionIndex + 1);
+                // Shuffle remaining
+                remaining.sort(() => Math.random() - 0.5);
+                questionsList = questionsList.slice(0, currentQuestionIndex + 1).concat(remaining);
             }
         }
 
@@ -1874,6 +2100,10 @@
                 isCorrect: false
             });
 
+            // Repeat timed out questions
+            questionsList.push(currentQ);
+            shuffleRemainingQuestions();
+
             highlightCorrectAnswer();
             triggerWrongFeedback(currentQ);
         }
@@ -1882,7 +2112,7 @@
             const currentQ = questionsList[currentQuestionIndex];
             const buttons = document.querySelectorAll('.option-button');
             buttons.forEach(btn => {
-                if (parseInt(btn.innerText) === currentQ.answer) {
+                if (parseFloat(btn.innerText) === currentQ.answer) {
                     btn.classList.add('correct');
                 }
             });
@@ -1910,16 +2140,17 @@
             await saveLevelAnalytics();
 
             // Set results screen values
-            const perfectScore = (correctAnswersCount === 10);
-            document.getElementById('result-details').innerText = `You answered ${correctAnswersCount} out of 10 questions correctly.`;
+            // To pass/perfect the level, the user must have completed 10 questions correctly without recycling
+            const perfectScore = (correctAnswersCount >= 10);
+            document.getElementById('result-details').innerText = `You completed the training set! Accuracy details saved.`;
             
             // Update stars
             const starsContainer = document.getElementById('result-stars');
-            if (correctAnswersCount === 10) {
+            if (perfectScore) {
                 starsContainer.innerText = '⭐⭐⭐';
                 document.getElementById('result-title').innerText = isBossLevel ? 'Boss Defeated! 🏆' : 'Perfect Victory! 🥇';
                 document.getElementById('result-title').style.color = 'var(--success)';
-            } else if (correctAnswersCount >= 8) {
+            } else if (correctAnswersCount >= 7) {
                 starsContainer.innerText = '⭐⭐';
                 document.getElementById('result-title').innerText = 'Great Effort! 🌟';
                 document.getElementById('result-title').style.color = 'var(--accent)';
@@ -2104,10 +2335,11 @@
             records.forEach(r => recordsMap.set(r.questionKey, r));
 
             if (selectedAnalyticsTab === 'tables') {
-                document.getElementById('analytics-matrix-title').innerText = "Tables 1-50 x 10 Grid";
+                document.getElementById('analytics-matrix-title').innerText = "Tables 2-50 x 2-10 Grid";
                 
                 const grid = document.createElement('div');
                 grid.className = 'tables-matrix-grid';
+                grid.style.gridTemplateColumns = 'repeat(10, minmax(70px, 1fr))';
                 
                 // Add header row
                 const emptyHeader = document.createElement('div');
@@ -2115,7 +2347,7 @@
                 emptyHeader.innerText = 'Table';
                 grid.appendChild(emptyHeader);
 
-                for (let col = 1; col <= 10; col++) {
+                for (let col = 2; col <= 10; col++) {
                     const colHeader = document.createElement('div');
                     colHeader.className = 'matrix-cell header-cell';
                     colHeader.innerText = `x${col}`;
@@ -2123,14 +2355,14 @@
                 }
 
                 // Add rows
-                for (let row = 1; row <= 50; row++) {
+                for (let row = 2; row <= 50; row++) {
                     // Row Label
                     const rowLabel = document.createElement('div');
                     rowLabel.className = 'matrix-cell header-cell';
                     rowLabel.innerText = `${row}`;
                     grid.appendChild(rowLabel);
 
-                    for (let col = 1; col <= 10; col++) {
+                    for (let col = 2; col <= 10; col++) {
                         const key = `${row}x${col}`;
                         const record = recordsMap.get(key);
                         
